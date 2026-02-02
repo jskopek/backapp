@@ -1,0 +1,97 @@
+:root {
+  color-scheme: light;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+body {
+  margin: 0;
+  background: #0b1020;
+  color: #e8ebff;
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: rgba(232, 235, 255, 0.75);
+}
+
+.meta {
+  display: flex;
+  gap: 8px;
+}
+
+.chip {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.services {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.serviceRow {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.serviceName {
+  font-weight: 600;
+}
+
+.serviceMeta {
+  color: rgba(232, 235, 255, 0.7);
+  font-size: 13px;
+}
+
+.button {
+  background: rgba(232, 235, 255, 0.12);
+  color: #e8ebff;
+  border: 1px solid rgba(232, 235, 255, 0.2);
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.button:disabled {
+  opacity: 0.5;
+}
+
+.hint {
+  margin: 12px 0 0;
+  color: rgba(232, 235, 255, 0.6);
+  font-size: 13px;
+}
+

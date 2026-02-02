@@ -20,8 +20,8 @@ Get a minimal cross-platform desktop app running with **Tauri + React**, with a 
    - Choose: `React` + `TypeScript` + `Vite`
 
 2) Run in dev
-   - `pnpm install`
-   - `pnpm tauri dev`
+   - `npm install` (or `pnpm install`)
+   - `npm run tauri dev` (or `pnpm tauri dev`)
 
 3) Create the minimal UI
    - Replace the default template with a single page:
@@ -38,10 +38,9 @@ Get a minimal cross-platform desktop app running with **Tauri + React**, with a 
      - `pnpm tauri build`
 
 ## Acceptance Criteria
-- `pnpm tauri dev` opens a native window.
+- `npm run tauri dev` (or `pnpm tauri dev`) opens a native window.
 - The UI displays “Hello BackApp” (or similar).
-- Builds run locally: `pnpm tauri build`.
+- Builds run locally: `npm run tauri build` (or `pnpm tauri build`).
 
 ## Stretch (optional)
 - Add a simple top-level navigation skeleton: “Services”, “Settings”.
-
