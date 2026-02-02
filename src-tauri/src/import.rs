@@ -1,6 +1,7 @@
 use crate::vault::{self, Manifest};
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::io;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Manager};
@@ -92,6 +93,78 @@ fn copy_file(src: &Path, dst: &Path) -> Result<(), String> {
   Ok(())
 }
 
+fn sanitize_zip_path(name: &str) -> Option<PathBuf> {
+  let path = Path::new(name);
+  let mut out = PathBuf::new();
+  for component in path.components() {
+    match component {
+      std::path::Component::Normal(part) => out.push(part),
+      // Reject absolute paths, prefixes, and any .. components.
+      _ => return None,
+    }
+  }
+  if out.as_os_str().is_empty() {
+    None
+  } else {
+    Some(out)
+  }
+}
+
+fn extract_zip(
+  app: &AppHandle,
+  zip_path: &Path,
+  dest_dir: &Path,
+  log_path: &Path,
+) -> Result<(), String> {
+  let file = fs::File::open(zip_path).map_err(|e| format!("open zip: {e}"))?;
+  let mut archive = zip::ZipArchive::new(file).map_err(|e| format!("read zip: {e}"))?;
+
+  write_log_line(
+    log_path,
+    &format!("extract zip: {} ({} entries)", zip_path.display(), archive.len()),
+  )?;
+
+  if !dest_dir.exists() {
+    fs::create_dir_all(dest_dir).map_err(|e| format!("create extract dir: {e}"))?;
+  }
+
+  let total = archive.len().max(1);
+  for i in 0..archive.len() {
+    let mut entry = archive
+      .by_index(i)
+      .map_err(|e| format!("read zip entry: {e}"))?;
+
+    let name = entry.name().to_string();
+    let rel = sanitize_zip_path(&name)
+      .ok_or_else(|| format!("unsafe zip entry path: {name}"))?;
+    let out_path = dest_dir.join(&rel);
+
+    let percent = (((i + 1) as f64 / total as f64) * 60.0) as u8 + 35;
+    emit_progress(
+      app,
+      &ImportProgress {
+        phase: "extract".to_string(),
+        message: format!("Extracting {}", rel.display()),
+        percent: Some(percent.min(98)),
+      },
+    );
+
+    if entry.is_dir() {
+      fs::create_dir_all(&out_path).map_err(|e| format!("create dir: {e}"))?;
+      continue;
+    }
+
+    if let Some(parent) = out_path.parent() {
+      fs::create_dir_all(parent).map_err(|e| format!("create dir: {e}"))?;
+    }
+
+    let mut out_file = fs::File::create(&out_path).map_err(|e| format!("create file: {e}"))?;
+    io::copy(&mut entry, &mut out_file).map_err(|e| format!("write file: {e}"))?;
+  }
+
+  Ok(())
+}
+
 fn copy_source_into_raw(
   app: &AppHandle,
   source: &Path,
@@ -122,9 +195,30 @@ fn copy_source_into_raw(
       &ImportProgress {
         phase: "copy".to_string(),
         message: "Copied file".to_string(),
-        percent: Some(90),
+        percent: Some(30),
       },
     );
+
+    // If the source is a .zip, extract it for immediate usability.
+    let is_zip = dest
+      .extension()
+      .and_then(|e| e.to_str())
+      .map(|e| e.eq_ignore_ascii_case("zip"))
+      .unwrap_or(false);
+    if is_zip {
+      let extracted = import_root.join("extracted");
+      extract_zip(app, &dest, &extracted, log_path)?;
+      write_log_line(log_path, &format!("extracted to: {}", extracted.display()))?;
+      emit_progress(
+        app,
+        &ImportProgress {
+          phase: "extract".to_string(),
+          message: "Extraction complete".to_string(),
+          percent: Some(98),
+        },
+      );
+    }
+
     return Ok(import_root);
   }
 
