@@ -30,6 +30,12 @@ Run the desktop app:
 npm run tauri dev
 ```
 
+Navigation uses hash-based routes to work reliably in Tauri:
+
+- `#/services`
+- `#/services/google-photos`
+- `#/settings`
+
 ## Build
 
 ```sh
