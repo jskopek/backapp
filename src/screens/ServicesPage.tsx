@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getVaultPath } from "../lib/vault";
-import { BUILT_IN_SERVICES } from "../services/registry";
+import { getBuiltInPlugins } from "../plugins/registry";
 
 export default function ServicesPage() {
   const [vaultPath, setVaultPath] = useState<string>("…");
@@ -23,14 +23,19 @@ export default function ServicesPage() {
       </div>
 
       <div className="serviceCards">
-        {BUILT_IN_SERVICES.map((service) => (
+        {getBuiltInPlugins().map((plugin) => (
           <a
-            key={service.id}
-            href={`#/services/${service.id}`}
+            key={plugin.metadata.id}
+            href={`#/services/${plugin.metadata.id}`}
             className="serviceCard"
           >
-            <div className="serviceCardTitle">{service.name}</div>
-            <div className="serviceCardDescription">{service.description}</div>
+            <div className="serviceCardTitle">
+              <span className="serviceIcon">{plugin.metadata.icon ?? ""}</span>
+              {plugin.metadata.name}
+            </div>
+            <div className="serviceCardDescription">
+              {plugin.metadata.description}
+            </div>
             <div className="serviceCardMeta">Last backup: —</div>
           </a>
         ))}

@@ -1,25 +1,27 @@
-export type BuiltInServiceId = "google-photos" | "whatsapp";
+// Backwards-compatible wrapper around the plugin registry.
+// Step 04 turns "services" into built-in plugins.
+import { getBuiltInPlugins, getPluginById } from "../plugins/registry";
 
 export type ServiceDescriptor = {
-  id: BuiltInServiceId;
+  id: string;
   name: string;
   description: string;
 };
 
-export const BUILT_IN_SERVICES: ServiceDescriptor[] = [
-  {
-    id: "google-photos",
-    name: "Google Photos",
-    description: "Import via Google Takeout (offline export)."
-  },
-  {
-    id: "whatsapp",
-    name: "WhatsApp",
-    description: "Import via iOS chat export (offline export)."
-  }
-];
+export const BUILT_IN_SERVICES: ServiceDescriptor[] = getBuiltInPlugins().map(
+  (p) => ({
+    id: p.metadata.id,
+    name: p.metadata.name,
+    description: p.metadata.description
+  })
+);
 
 export function getServiceById(id: string): ServiceDescriptor | null {
-  return BUILT_IN_SERVICES.find((s) => s.id === id) ?? null;
+  const plugin = getPluginById(id);
+  if (!plugin) return null;
+  return {
+    id: plugin.metadata.id,
+    name: plugin.metadata.name,
+    description: plugin.metadata.description
+  };
 }
-

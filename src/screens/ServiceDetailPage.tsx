@@ -1,20 +1,20 @@
-import { getServiceById } from "../services/registry";
 import { useEffect, useState } from "react";
 import { getVaultPath } from "../lib/vault";
+import { getPluginById } from "../plugins/registry";
 
 type Props = {
   serviceId: string;
 };
 
 export default function ServiceDetailPage({ serviceId }: Props) {
-  const service = getServiceById(serviceId);
+  const plugin = getPluginById(serviceId);
   const [vaultPath, setVaultPath] = useState<string>("…");
 
   useEffect(() => {
     getVaultPath().then(setVaultPath).catch(() => setVaultPath("(unknown)"));
   }, []);
 
-  if (!service) {
+  if (!plugin) {
     return (
       <section className="card">
         <h2>Unknown service</h2>
@@ -31,11 +31,14 @@ export default function ServiceDetailPage({ serviceId }: Props) {
             Services
           </a>
           <span className="breadcrumbsSep">/</span>
-          <span>{service.name}</span>
+          <span>{plugin.metadata.name}</span>
         </div>
 
-        <h2>{service.name}</h2>
-        <p className="hint">{service.description}</p>
+        <h2>
+          <span className="serviceIcon">{plugin.metadata.icon ?? ""}</span>
+          {plugin.metadata.name}
+        </h2>
+        <p className="hint">{plugin.metadata.description}</p>
         <div className="kv">
           <div className="kvKey">Vault</div>
           <div className="kvValue mono" title={vaultPath}>
@@ -45,10 +48,17 @@ export default function ServiceDetailPage({ serviceId }: Props) {
         <div className="kv">
           <div className="kvKey">Expected layout</div>
           <div className="kvValue mono">
-            Vault/{service.id}/&lt;accountId&gt;/
+            Vault/{plugin.metadata.id}/&lt;accountId&gt;/
           </div>
         </div>
       </section>
+
+      <section className="card">
+        <h3>Instructions</h3>
+        <plugin.Instructions pluginId={plugin.metadata.id} />
+      </section>
+
+      <plugin.Viewer pluginId={plugin.metadata.id} />
 
       <section className="card">
         <h3>Backups</h3>
