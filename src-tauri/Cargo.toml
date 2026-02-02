@@ -14,6 +14,8 @@ tauri = { version = "1.5.4", features = ["api-all"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 zip = { version = "0.6", default-features = false, features = ["deflate"] }
+rusqlite = { version = "0.31.0", features = ["bundled"] }
+blake3 = "1.5.0"
 
 [features]
 default = ["custom-protocol"]

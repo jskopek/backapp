@@ -165,6 +165,21 @@ fn extract_zip(
   Ok(())
 }
 
+fn find_zip_files(root: &Path) -> Result<Vec<PathBuf>, String> {
+  let files = list_files_recursive(root)?;
+  Ok(
+    files
+      .into_iter()
+      .filter(|p| {
+        p.extension()
+          .and_then(|e| e.to_str())
+          .map(|e| e.eq_ignore_ascii_case("zip"))
+          .unwrap_or(false)
+      })
+      .collect(),
+  )
+}
+
 fn copy_source_into_raw(
   app: &AppHandle,
   source: &Path,
@@ -244,6 +259,42 @@ fn copy_source_into_raw(
       },
     );
     copy_file(file, &dest)?;
+  }
+
+  // If the selected source is a folder that contains zip files (common for
+  // multi-part Takeout exports), extract them into a sibling folder.
+  let copied_zips = find_zip_files(&import_root)?;
+  if !copied_zips.is_empty() {
+    let extracted_root = import_root.join("extracted");
+    fs::create_dir_all(&extracted_root)
+      .map_err(|e| format!("create extracted dir: {e}"))?;
+
+    // Safety: cap extraction to avoid runaway work.
+    let max_extract = 25usize;
+    for (i, zip_file) in copied_zips.iter().take(max_extract).enumerate() {
+      let base = zip_file
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .unwrap_or("zip");
+      let dest = extracted_root.join(base);
+      emit_progress(
+        app,
+        &ImportProgress {
+          phase: "extract".to_string(),
+          message: format!("Extracting ZIP {}/{}", i + 1, copied_zips.len()),
+          percent: Some(96),
+        },
+      );
+      extract_zip(app, zip_file, &dest, log_path)?;
+    }
+    write_log_line(
+      log_path,
+      &format!(
+        "extracted {} zip(s) under: {}",
+        copied_zips.len().min(max_extract),
+        extracted_root.display()
+      ),
+    )?;
   }
 
   emit_progress(

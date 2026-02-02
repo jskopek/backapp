@@ -39,3 +39,10 @@ export async function runImport(args: RunImportArgs): Promise<RunImportResult | 
   }
   return invoke<RunImportResult>("run_import", { args });
 }
+
+export async function indexGooglePhotos(accountId: string): Promise<{ indexedCount: number } | null> {
+  if (!isTauri()) return null;
+  return invoke<{ indexedCount: number }>("index_google_photos", {
+    args: { accountId }
+  });
+}

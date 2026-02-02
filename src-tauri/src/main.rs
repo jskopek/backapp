@@ -3,6 +3,7 @@
 mod vault;
 mod import;
 mod raw;
+mod google_photos;
 
 fn main() {
   tauri::Builder::default()
@@ -16,7 +17,9 @@ fn main() {
       raw::list_raw_tree,
       raw::read_text_file,
       raw::reveal_in_os,
-      raw::open_in_os
+      raw::open_in_os,
+      google_photos::index_google_photos,
+      google_photos::list_google_photos_media
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
