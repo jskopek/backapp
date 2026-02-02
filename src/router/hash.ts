@@ -29,6 +29,7 @@ export type RouteMatch =
   | { name: "services" }
   | { name: "serviceDetail"; serviceId: string }
   | { name: "importWizard"; serviceId: string }
+  | { name: "rawBrowser"; serviceId: string; accountId: string; subdir?: string }
   | { name: "settings" }
   | { name: "notFound"; path: string };
 
@@ -43,6 +44,17 @@ export function matchRoute(path: string): RouteMatch {
     if (parts.length === 2) return { name: "serviceDetail", serviceId: parts[1] };
     if (parts.length === 3 && parts[2] === "import") {
       return { name: "importWizard", serviceId: parts[1] };
+    }
+    if (parts.length >= 4 && parts[2] === "raw") {
+      const serviceId = parts[1];
+      const accountId = parts[3];
+      const subdir = parts.slice(4).join("/");
+      return {
+        name: "rawBrowser",
+        serviceId,
+        accountId,
+        subdir: subdir ? subdir : undefined
+      };
     }
   }
 

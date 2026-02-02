@@ -56,6 +56,12 @@ export default function ServiceDetailPage({ serviceId }: Props) {
           <a className="buttonLink" href={`#/services/${plugin.metadata.id}/import`}>
             Import / Re-import
           </a>
+          <a
+            className="buttonLink"
+            href={`#/services/${plugin.metadata.id}/raw/default/`}
+          >
+            Browse Raw Files
+          </a>
         </div>
       </section>
 

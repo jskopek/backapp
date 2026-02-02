@@ -2,6 +2,7 @@ import ServiceDetailPage from "../screens/ServiceDetailPage";
 import ServicesPage from "../screens/ServicesPage";
 import SettingsPage from "../screens/SettingsPage";
 import ImportWizardPage from "../screens/ImportWizardPage";
+import RawBrowserPage from "../screens/RawBrowserPage";
 import { useRoute } from "./hash";
 
 export default function Router() {
@@ -14,6 +15,14 @@ export default function Router() {
       return <ServiceDetailPage serviceId={route.serviceId} />;
     case "importWizard":
       return <ImportWizardPage serviceId={route.serviceId} />;
+    case "rawBrowser":
+      return (
+        <RawBrowserPage
+          serviceId={route.serviceId}
+          accountId={route.accountId}
+          subdir={route.subdir}
+        />
+      );
     case "settings":
       return <SettingsPage />;
     case "notFound":

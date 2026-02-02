@@ -327,6 +327,75 @@ body {
   line-height: 1.4;
 }
 
+.rawToolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.rawToolbar .input {
+  flex: 1;
+}
+
+.rawGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.rawList,
+.rawPreview {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  min-width: 0;
+}
+
+.fileList {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 6px;
+  max-height: 380px;
+  overflow: auto;
+}
+
+.fileRow {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+  cursor: default;
+}
+
+.fileRowActive {
+  border-color: rgba(232, 235, 255, 0.2);
+  background: rgba(232, 235, 255, 0.08);
+}
+
+.fileIcon {
+  text-align: center;
+}
+
+.fileName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .rawGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 800px) {
   .appShell {
     grid-template-columns: 1fr;
