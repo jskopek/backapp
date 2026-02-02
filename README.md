@@ -42,4 +42,12 @@ Navigation uses hash-based routes to work reliably in Tauri:
 npm run tauri build
 ```
 
+## Icons
+
+Generate/update icons used for macOS/Windows bundles:
+
+```sh
+npm run icon:generate
+```
+
 Note: bundling is currently disabled (`src-tauri/tauri.conf.json` has `bundle.active=false`) to keep the initial scaffold lightweight.
