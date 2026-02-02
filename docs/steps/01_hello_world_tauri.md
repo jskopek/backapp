@@ -33,9 +33,9 @@ Get a minimal cross-platform desktop app running with **Tauri + React**, with a 
    - Add a `.gitignore` suitable for Node + Tauri
    - Add `README.md` with:
      - prerequisites
-     - `pnpm install`
-     - `pnpm tauri dev`
-     - `pnpm tauri build`
+     - `npm install` (or `pnpm install`)
+     - `npm run tauri dev` (or `pnpm tauri dev`)
+     - `npm run tauri build` (or `pnpm tauri build`)
 
 ## Acceptance Criteria
 - `npm run tauri dev` (or `pnpm tauri dev`) opens a native window.

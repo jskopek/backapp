@@ -1,4 +1,6 @@
 import { getServiceById } from "../services/registry";
+import { useEffect, useState } from "react";
+import { getVaultPath } from "../lib/vault";
 
 type Props = {
   serviceId: string;
@@ -6,6 +8,11 @@ type Props = {
 
 export default function ServiceDetailPage({ serviceId }: Props) {
   const service = getServiceById(serviceId);
+  const [vaultPath, setVaultPath] = useState<string>("…");
+
+  useEffect(() => {
+    getVaultPath().then(setVaultPath).catch(() => setVaultPath("(unknown)"));
+  }, []);
 
   if (!service) {
     return (
@@ -29,6 +36,18 @@ export default function ServiceDetailPage({ serviceId }: Props) {
 
         <h2>{service.name}</h2>
         <p className="hint">{service.description}</p>
+        <div className="kv">
+          <div className="kvKey">Vault</div>
+          <div className="kvValue mono" title={vaultPath}>
+            {vaultPath}
+          </div>
+        </div>
+        <div className="kv">
+          <div className="kvKey">Expected layout</div>
+          <div className="kvValue mono">
+            Vault/{service.id}/&lt;accountId&gt;/
+          </div>
+        </div>
       </section>
 
       <section className="card">
@@ -49,4 +68,3 @@ export default function ServiceDetailPage({ serviceId }: Props) {
     </div>
   );
 }
-
