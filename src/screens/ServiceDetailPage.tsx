@@ -51,6 +51,12 @@ export default function ServiceDetailPage({ serviceId }: Props) {
             Vault/{plugin.metadata.id}/&lt;accountId&gt;/
           </div>
         </div>
+
+        <div className="actions">
+          <a className="buttonLink" href={`#/services/${plugin.metadata.id}/import`}>
+            Import / Re-import
+          </a>
+        </div>
       </section>
 
       <section className="card">

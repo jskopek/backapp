@@ -17,10 +17,12 @@ export type PluginViewerProps = {
 
 export type ImporterContext = {
   pluginId: string;
-  // Step 05 introduces a real import wizard + file pickers.
+  accountId: string;
+  displayName?: string;
+  sourcePath: string;
 };
 
-export type PluginImporter = (context: ImporterContext) => Promise<void>;
+export type PluginImporter = (context: ImporterContext) => Promise<unknown>;
 
 export type RawBrowserHints = {
   rootLabel?: string;
@@ -33,4 +35,3 @@ export type Plugin = {
   importer: PluginImporter;
   rawBrowserHints?: RawBrowserHints;
 };
-

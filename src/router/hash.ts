@@ -28,6 +28,7 @@ export function useHashPath(): string {
 export type RouteMatch =
   | { name: "services" }
   | { name: "serviceDetail"; serviceId: string }
+  | { name: "importWizard"; serviceId: string }
   | { name: "settings" }
   | { name: "notFound"; path: string };
 
@@ -40,6 +41,9 @@ export function matchRoute(path: string): RouteMatch {
   if (parts[0] === "services") {
     if (parts.length === 1) return { name: "services" };
     if (parts.length === 2) return { name: "serviceDetail", serviceId: parts[1] };
+    if (parts.length === 3 && parts[2] === "import") {
+      return { name: "importWizard", serviceId: parts[1] };
+    }
   }
 
   if (parts[0] === "settings" && parts.length === 1) {
@@ -53,4 +57,3 @@ export function useRoute(): RouteMatch {
   const path = useHashPath();
   return useMemo(() => matchRoute(path), [path]);
 }
-

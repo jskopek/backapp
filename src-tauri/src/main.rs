@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod vault;
+mod import;
 
 fn main() {
   tauri::Builder::default()
@@ -9,7 +10,8 @@ fn main() {
       vault::set_vault_path,
       vault::ensure_account_folder,
       vault::read_manifest,
-      vault::write_manifest
+      vault::write_manifest,
+      import::run_import
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

@@ -1,6 +1,7 @@
 import ServiceDetailPage from "../screens/ServiceDetailPage";
 import ServicesPage from "../screens/ServicesPage";
 import SettingsPage from "../screens/SettingsPage";
+import ImportWizardPage from "../screens/ImportWizardPage";
 import { useRoute } from "./hash";
 
 export default function Router() {
@@ -11,6 +12,8 @@ export default function Router() {
       return <ServicesPage />;
     case "serviceDetail":
       return <ServiceDetailPage serviceId={route.serviceId} />;
+    case "importWizard":
+      return <ImportWizardPage serviceId={route.serviceId} />;
     case "settings":
       return <SettingsPage />;
     case "notFound":

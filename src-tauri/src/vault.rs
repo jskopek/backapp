@@ -69,7 +69,7 @@ fn save_settings(app: &AppHandle, settings: &Settings) -> Result<(), String> {
   fs::write(&path, raw).map_err(|e| format!("write settings: {e}"))
 }
 
-fn resolve_vault_path(app: &AppHandle) -> Result<PathBuf, String> {
+pub(crate) fn resolve_vault_path_for_import(app: &AppHandle) -> Result<PathBuf, String> {
   let settings = load_settings(app)?;
 
   let path = match settings.vault_path {
@@ -84,12 +84,41 @@ fn resolve_vault_path(app: &AppHandle) -> Result<PathBuf, String> {
   Ok(path)
 }
 
+fn resolve_vault_path(app: &AppHandle) -> Result<PathBuf, String> {
+  resolve_vault_path_for_import(app)
+}
+
 fn account_root(vault: &Path, plugin_id: &str, account_id: &str) -> PathBuf {
   vault.join(plugin_id).join(account_id)
 }
 
 fn manifest_path(vault: &Path, plugin_id: &str, account_id: &str) -> PathBuf {
   account_root(vault, plugin_id, account_id).join("manifest.json")
+}
+
+pub(crate) fn read_manifest_inner(
+  vault: &Path,
+  plugin_id: &str,
+  account_id: &str,
+) -> Result<Option<Manifest>, String> {
+  let path = manifest_path(vault, plugin_id, account_id);
+  if !path.exists() {
+    return Ok(None);
+  }
+  let raw = fs::read_to_string(&path).map_err(|e| format!("read manifest: {e}"))?;
+  let manifest: Manifest =
+    serde_json::from_str(&raw).map_err(|e| format!("parse manifest: {e}"))?;
+  Ok(Some(manifest))
+}
+
+pub(crate) fn write_manifest_inner(vault: &Path, manifest: &Manifest) -> Result<(), String> {
+  let root = account_root(vault, &manifest.plugin_id, &manifest.account_id);
+  fs::create_dir_all(root.join("raw")).map_err(|e| format!("create raw dir: {e}"))?;
+  fs::create_dir_all(root.join("logs")).map_err(|e| format!("create logs dir: {e}"))?;
+  let path = root.join("manifest.json");
+  let raw = serde_json::to_string_pretty(&manifest)
+    .map_err(|e| format!("serialize manifest: {e}"))?;
+  fs::write(&path, raw).map_err(|e| format!("write manifest: {e}"))
 }
 
 #[tauri::command]
@@ -140,25 +169,11 @@ pub fn read_manifest(
   account_id: String,
 ) -> Result<Option<Manifest>, String> {
   let vault = resolve_vault_path(&app)?;
-  let path = manifest_path(&vault, &plugin_id, &account_id);
-  if !path.exists() {
-    return Ok(None);
-  }
-  let raw = fs::read_to_string(&path).map_err(|e| format!("read manifest: {e}"))?;
-  let manifest: Manifest =
-    serde_json::from_str(&raw).map_err(|e| format!("parse manifest: {e}"))?;
-  Ok(Some(manifest))
+  read_manifest_inner(&vault, &plugin_id, &account_id)
 }
 
 #[tauri::command]
 pub fn write_manifest(app: AppHandle, manifest: Manifest) -> Result<(), String> {
   let vault = resolve_vault_path(&app)?;
-  let root = account_root(&vault, &manifest.plugin_id, &manifest.account_id);
-  fs::create_dir_all(root.join("raw")).map_err(|e| format!("create raw dir: {e}"))?;
-  fs::create_dir_all(root.join("logs")).map_err(|e| format!("create logs dir: {e}"))?;
-  let path = root.join("manifest.json");
-  let raw = serde_json::to_string_pretty(&manifest)
-    .map_err(|e| format!("serialize manifest: {e}"))?;
-  fs::write(&path, raw).map_err(|e| format!("write manifest: {e}"))
+  write_manifest_inner(&vault, &manifest)
 }
-

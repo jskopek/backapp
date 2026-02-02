@@ -1,4 +1,5 @@
 import type { Plugin } from "../sdk";
+import { runImport } from "../../lib/import";
 
 function Instructions() {
   return (
@@ -52,11 +53,15 @@ export const googlePhotosTakeoutPlugin: Plugin = {
   },
   Instructions,
   Viewer,
-  importer: async () => {
-    throw new Error("Not implemented yet (see Step 05)");
+  importer: async (context) => {
+    return runImport({
+      pluginId: context.pluginId,
+      accountId: context.accountId,
+      displayName: context.displayName ?? null,
+      sourcePath: context.sourcePath
+    });
   },
   rawBrowserHints: {
     rootLabel: "Google Photos raw export"
   }
 };
-
