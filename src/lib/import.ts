@@ -46,3 +46,15 @@ export async function indexGooglePhotos(accountId: string): Promise<{ indexedCou
     args: { accountId }
   });
 }
+
+export async function indexWhatsappIos(accountId: string): Promise<
+  | {
+      indexedMessages: number;
+      indexedAttachments: number;
+      chatFilePath: string;
+    }
+  | null
+> {
+  if (!isTauri()) return null;
+  return invoke("index_whatsapp_ios", { args: { accountId } });
+}

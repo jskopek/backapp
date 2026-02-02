@@ -4,6 +4,7 @@ mod vault;
 mod import;
 mod raw;
 mod google_photos;
+mod whatsapp;
 
 fn main() {
   tauri::Builder::default()
@@ -19,7 +20,10 @@ fn main() {
       raw::reveal_in_os,
       raw::open_in_os,
       google_photos::index_google_photos,
-      google_photos::list_google_photos_media
+      google_photos::list_google_photos_media,
+      whatsapp::index_whatsapp_ios,
+      whatsapp::list_whatsapp_threads,
+      whatsapp::list_whatsapp_messages
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
